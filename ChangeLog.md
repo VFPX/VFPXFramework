@@ -4,6 +4,18 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-07-21
+
+* Added System.app since it's required by SFGDIMeasureString.prg, which is used by VFPXFile and VFPXDirectory, although those classes now work properly if System.app isn't present.
+
+* Fixed bugs in SFGDIMeasureString.prg, SFMonitors.prg.
+
+* Removed code in ShortcutMenu from base classes that don't need it.
+
+* Removed SetupGrid method from VFPXBaseGrid since the builder handles that behavior.
+
+* Added AnyChange and shortcut menu to VFXXBaseOptionGroup.
+
 ### 2024-01-30
 
 * Initial release.
