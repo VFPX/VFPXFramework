@@ -4,6 +4,12 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-07-27
+
+* Added GetFilesInFolder.prg
+
+* Added TRY to api_apprun.prg to prevent an error with INKEY.
+
 ### 2024-07-21
 
 * Added System.app since it's required by SFGDIMeasureString.prg, which is used by VFPXFile and VFPXDirectory, although those classes now work properly if System.app isn't present.

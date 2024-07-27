@@ -261,6 +261,9 @@ Here's an example:
 lcFileName = GetProperFileCase(fullpath('myfile.pdf'))
 ```
 
+### Getting files in a folder and all subdirectories
+ADIR() only fills an array with information about the files in the specified folder. GetFilesInFolder fills an array with all files  in the specified folder and all subdirectories. It turns the number of files found. The array contains a single column with the full path for the filename.
+
 ## File dialogs
 The VFP GETFILE() and PUTFILE() functions have a *lot* of shortcomings. Here are just a few:
 
@@ -461,3 +464,4 @@ endif
 
 ## Others
 SFMonitors.prg provides a class, SFMonitors, with several methods that help determine monitor sizes. GetPrimaryMonitorSize returns an SFSize object with nLeft, nRight, nTop, and nBottom properties containing the dimensions of the primary monitor. GetMonitorSize(tnX, tnY) returns an SFSize object with the dimensions of the monitor containing the specified location.
+
