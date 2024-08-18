@@ -12,6 +12,8 @@
 
 - Make the desired changes.
 
+- Zip all but FXP files in the Source folder to FoxGet\Source.zip (this is needed for [FoxGet](https://github.com/doughennig/foxget) functionality).
+
 - Describe the changes at the top of *ChangeLog.md*.
 
 - Commit the changes.
