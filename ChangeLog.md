@@ -4,6 +4,10 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-08-18
+
+* Removed Thor Check for Update related files since VFPX Framework is better installed with [FoxGet](https://github.com/doughennig/foxget).
+
 ### 2024-07-27
 
 * Added GetFilesInFolder.prg

@@ -10,15 +10,9 @@
 
 - Fork the project: see this [guide](https://www.dataschool.io/how-to-contribute-on-github/) for setting up and using a fork.
 
-- If this is a new major release, edit the Version setting in *BuildProcess\ProjectSettings.txt*.
+- Make the desired changes.
 
 - Describe the changes at the top of *ChangeLog.md*.
-
-- If you haven't already done so, install VFPX Deployment: choose Check for Updates from the Thor menu, turn on the checkbox for VFPX Deployment, and click Install.
-
-- Start VFP 9 (not VFP Advanced) and CD to the project folder.
-
-- Run the VFPX Deployment tool to create the installation files: choose VFPX Project Deployment from the Thor Tools, Application menu. Alternately, execute ```EXECSCRIPT(_screen.cThorDispatcher, 'Thor_Tool_DeployVFPXProject')```.
 
 - Commit the changes.
 
@@ -27,4 +21,4 @@
 - Create a pull request; ensure the description clearly describes the problem and solution or the enhancement.
 
 ----
-Last changed: 2024-01-30
+Last changed: 2024-08-18
