@@ -4,6 +4,12 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-08-25
+
+* VFPXInternet.prg now handles "https://" in the server name.
+
+* Added BuildZip.prg to create FoxGet\Source.zip.
+
 ### 2024-08-18
 
 * Removed Thor Check for Update related files since VFPX Framework is better installed with [FoxGet](https://github.com/doughennig/foxget).
