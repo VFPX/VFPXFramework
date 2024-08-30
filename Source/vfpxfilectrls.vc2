@@ -629,6 +629,7 @@ DEFINE CLASS vfpxfile AS vfpxbasecontainer OF "vfpxbaselibrary.vcx"
 			.cCaption     = .Parent.cCaption
 			.cExtensions  = .Parent.cExtensions
 			lcFileName    = .Parent.cFileName
+			.cFileName    = .Parent.cFileName
 			.lSaveDialog  = .Parent.lSaveDialog
 			.lMultiSelect = .Parent.lMultiSelect
 			dodefault()

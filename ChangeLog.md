@@ -4,6 +4,14 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-08-30
+
+* ExecuteCommand.prg now accepts a tlNoWait parameter (if .T., it returns immediately rather than waiting for the command to finish execution) and handles output redirection (specifying ">" followed by a path) in the command line.
+
+* Fixed an issue with GetFileName.prg not setting the initial directory properly if a fully-qualified path isn't passed for the filename.
+
+* Fixed an issue with VFPXFile not setting the default filename.
+
 ### 2024-08-25
 
 * VFPXInternet.prg now handles "https://" in the server name.
