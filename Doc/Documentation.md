@@ -151,7 +151,7 @@ For example, [DeployFox](https://github.com/DougHennig/DeployFox) has a VFPXDrop
 The ShortcutMenu method populates the list with previously opened projects (see the Maintaining MRU Lists section below for how the list of projects is saved):
 
 ```
-lparameters toMenu,	;
+lparameters toMenu, ;
     tcObject
 local laProjects[1], ;
     lnProjects, ;
