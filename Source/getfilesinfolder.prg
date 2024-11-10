@@ -3,7 +3,7 @@
 * Purpose:			Fills an array with the filenames in the specified folder
 *						and all subdirectories
 * Author:			Doug Hennig
-* Last revision:	07/21/2024
+* Last revision:	11/05/2024
 * Parameters:		taFiles  - an array to contain the filenames (passed by
 *						reference)
 *					tcFolder - the folder to get the files in
@@ -26,10 +26,12 @@ lcFolder   = GetProperFileCase(addbs(tcFolder))
 lnFiles    = adir(laFiles, lcFolder + '*.*', '', 1)
 lnExisting = alen(taFiles)
 lnExisting = iif(lnExisting = 1, 0, lnExisting)
-dimension taFiles[lnExisting + lnFiles]
-for lnI = 1 to lnFiles
-	taFiles[lnExisting + lnI] = lcFolder + laFiles[lnI, 1]
-next lnI
+if lnExisting + lnFiles > 0
+	dimension taFiles[lnExisting + lnFiles]
+	for lnI = 1 to lnFiles
+		taFiles[lnExisting + lnI] = lcFolder + laFiles[lnI, 1]
+	next lnI
+endif lnExisting + lnFiles > 0
 lnFolders = adir(laFolders, lcFolder + '*.*', 'D', 1)
 for lnI = 1 to lnFolders
 	lcCurrFolder = laFolders[lnI, 1]

@@ -4,6 +4,22 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2024-11-10
+
+- A new VFPXSortGrid class in VFPXSortGrid.vcx provides clicking the column header to sort on a column. Thanks to Tore Bleken for providing this class.
+
+- VFPXPersist now has its own cRegistryKey property you can set rather than requiring one belonging to the form (the form's is used if it exists; otherwise, the VFPXPersist object's is used).
+
+- VFPXPersist now supports persisting other settings in addition to size and position using the aPersist array; see the [documentation](Doc/Documentation.md) for details.
+
+- VFPXInternet.prg now ignores certificate revocation checks when they fail due to missing/offline distribution points for the revocation check lists, which causes error 35 when downloading files. This was done by adding "--ssl-revoke-best-effort" to the CURL command line. Thanks to Christof Wollenhaupt for the fix.
+
+- OpenFile.prg no longer opens files in the background on Windows 10 machines. Thanks to Joel Leach for the fix.
+
+- VFPXGridBuilder.prg now supports spaces in addition to tabs between pipes, and it supports putting the format text into a custom GridDefinition method of the grid, which was added to VFPXBaseGrid.
+
+- Fixed bugs in ReadINI.prg and GetFilesInFolder.prg.
+
 ### 2024-08-30
 
 * ExecuteCommand.prg now accepts a tlNoWait parameter (if .T., it returns immediately rather than waiting for the command to finish execution) and handles output redirection (specifying ">" followed by a path) in the command line.

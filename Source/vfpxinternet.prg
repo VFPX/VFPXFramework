@@ -5,8 +5,7 @@ define class VFPXInternet as Custom
 		&& the window mode
 
 	function DownloadFile(tcRemoteFile, tcLocalFile, tcServer, tcUserName, tcPassword)
-		local lcServer, ;
-			lcCommand, ;
+		local lcCommand, ;
 			lcMessage, ;
 			llReturn
 		do case
@@ -21,12 +20,9 @@ define class VFPXInternet as Custom
 * Download the file using curl.
 
 			otherwise
-				lcServer  = icase(empty(tcServer), '', ;
-					'//' $ tcServer, tcServer, ;
-					'ftp://' + tcServer)
-				lcCommand = 'curl.exe -o "' + tcLocalFile + '" -L ' + ;
-					lcServer + ;
-					iif(right(lcServer, 1) = '/' or left(tcRemoteFile, 1) = '/', '', '/') + ;
+				lcCommand = 'curl.exe --ssl-revoke-best-effort -o "' + tcLocalFile + '" -L ' + ;
+					iif(empty(tcServer), '', 'ftp://' + tcServer + ;
+						iif(right(tcServer, 1) = '/' or left(tcRemoteFile, 1) = '/', '', '/')) + ;
 					tcRemoteFile + iif(empty(tcUserName), '', ' -u ' + tcUserName + ':' + ;
 					tcPassword)
 				lcMessage = ExecuteCommand(lcCommand, , This.cWindowMode)
@@ -39,8 +35,7 @@ define class VFPXInternet as Custom
 	endfunc
 
 	function UploadFile(tcRemoteFile, tcLocalFile, tcServer, tcUserName, tcPassword)
-		local lcServer, ;
-			lcCommand, ;
+		local lcCommand, ;
 			lcMessage, ;
 			llReturn
 		do case
@@ -61,9 +56,8 @@ define class VFPXInternet as Custom
 * Upload the file using curl.
 
 			otherwise
-				lcServer  = iif('//' $ tcServer, tcServer, 'ftp://' + tcServer)
-				lcCommand = 'curl.exe -T "' + tcLocalFile + '" ' + lcServer + ;
-					iif(right(lcServer, 1) = '/' or left(tcRemoteFile, 1) = '/', '', '/') + ;
+				lcCommand = 'curl.exe -T "' + tcLocalFile + '" ftp://' + tcServer + ;
+					iif(right(tcServer, 1) = '/' or left(tcRemoteFile, 1) = '/', '', '/') + ;
 					tcRemoteFile + ' -u ' + tcUserName + ':' + tcPassword
 				lcMessage = ExecuteCommand(lcCommand, , This.cWindowMode)
 				llReturn  = empty(lcMessage)

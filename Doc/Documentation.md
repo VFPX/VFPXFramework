@@ -101,21 +101,23 @@ VFPXBaseLibrary.h contains some commonly used constants.
 
 Grids can be a pain to set up, especially if you later need to add a column between two existing columns. VFPXGridBuilder provides an easy way to define the columns of a grid by using a format definition.
 
-To use it, put the format definition on the clipboard and invoke the builder. If you're using a VFPXGrid object, right-click the grid and choose Builder. For any other type of grid, select the grid and run VFPXGridBuilder.prg.
+The easiest way to specify the format definition is to put it between TEXT and ENDTEXT statements in some method of the grid, such as Init. You then copy the text (not including the TEXT and ENDTEXT statements) and invoke the builder. Alternatively, put the definition into a custom GridDefinition of the grid (VFPXBaseGrid has such a method) and return the definition string from that method. Then there's no need to copy it to the clipboard before invoking the builder.
 
-The easiest way to copy the format definition is to put it as comments in some method of the grid, such as Init. You then copy the text and invoke the builder.
+To invoke the builder, if you're using a VFPXBaseGrid object, right-click the grid and choose Builder. For any other type of grid, select the grid and run VFPXGridBuilder.prg.
 
 Here's an example of a format definition:
 
 ```
-*Field     |Width  |Caption    |Alignment  |InputMask  |Format  |ReadOnly  |Control
-*Invnum    |70     |Invoice #  |           |           |        |.T.       |
-*Date      |70     |Date       |           |           |        |.T.       |
-*Name      |*      |Project    |           |           |        |.T.       |
-*Amount    |60     |Amount     |R          |99,999.99  |        |.T.       |
-*Paid      |70     |Paid       |           |           |        |          |Checkbox
-*DatePaid  |70     |Date Paid  |           |           |        |          |
-*Received  |60     |Received   |R          |99,999.99  |        |          |
+text to lcFormat noshow
+Field     |Width  |Caption    |Alignment  |InputMask  |Format  |ReadOnly  |Control
+Invnum    |70     |Invoice #  |           |           |        |.T.       |
+Date      |70     |Date       |           |           |        |.T.       |
+Name      |*      |Project    |           |           |        |.T.       |
+Amount    |60     |Amount     |R          |99,999.99  |        |.T.       |
+Paid      |70     |Paid       |           |           |        |          |Checkbox
+DatePaid  |70     |Date Paid  |           |           |        |          |
+Received  |60     |Received   |R          |99,999.99  |        |          |
+endtext
 ```
 
 Here's some information about the format definition:
@@ -138,8 +140,27 @@ Here's some information about the format definition:
 
 ## Specialty classes
 
+### Sortable grid
+Use VFPXSortGrid (in VFPXSortGrid.vcx) to allow the user to click a column header to sort on that column. VFPXSortGrid, which is a subclass of VFPXBaseGrid, allows sorting on any column that has as a ControlSource a field in a cursor or table that has a tag with the same name as the field. The header of the sorted column displays a down arrow for ascending order or an up arrow for descending order.
+
 ### Persistent form
-Users appreciate a form that opens in the same position and size as it was last time it was open. VFPXPersistentForm in VFPXPersistentForm.vcx provides this ability. Create a form based on VFPXPersistentForm and set the cRegistry property to the Windows Registry location in HKEY_CURRENT_USER to save the window settings (for example, "Software\MyApp") in either the Properties window or in the Load or Init methods (in the case of Init, set it prior to calling DODEFAULT()). VFPXPersistentForm uses both VFPXPersist and SFMonitors.prg (discussed below) to size and position the form properly, including ensuring it fits on the correct monitor. For example, if the user has two monitors, the form was opened on the second monitor before, but now only one monitor is available, the form is opened on the correct monitor and sized and positioned appropriately. It also uses VFPXRegistry (discussed below) to read from and write to the Registry.
+Users appreciate a form that opens in the same position and size as it was last time it was open. VFPXPersistentForm in VFPXPersistentForm.vcx provides this ability. Create a form based on VFPXPersistentForm and set the cRegistry property to the Windows Registry location in HKEY_CURRENT_USER to save the window settings (for example, "Software\MyApp") in either the Properties window or in the Load or Init methods (in the case of Init, set it prior to calling DODEFAULT()). VFPXPersistentForm has a VFPXPersist object.
+
+Alternatively, add a VFPXPersist object to any form and set its cRegistry property to the Windows Registry location in HKEY_CURRENT_USER to save the window settings.
+
+VFPXPersist uses SFMonitors.prg (discussed below) to size and position the form properly, including ensuring it fits on the correct monitor. For example, if the user has two monitors, the form was opened on the second monitor before, but now only one monitor is available, the form is opened on the correct monitor and sized and positioned appropriately. It also uses VFPXRegistry (discussed below) to read from and write to the Registry.
+
+VFPXPersist supports persisting other settings in addition to size and position. Dimension the aPersist array to one row per setting and two columns; this should be done prior to calling the Restore method. The first column contains the Registry key to use and the second is the name of the property to persist. For example, to save and restore the cFileName property of the form, use this code in the Init method of the form:
+
+```
+dimension This.oPersist.aPersist[1, 2]
+This.oPersist.aPersist[1, 1] = 'FileName'
+This.oPersist.aPersist[1, 2] = 'Thisform.cFileName'
+This.oPersist.Restore()
+  && or DODEFAULT() if using VFPXPersistentForm
+```
+
+Note this code specifies the cFileName property as belonging to "Thisform" since that property is referenced in the context of the VFPXPersist object.
 
 ### Button with dropdown menu
 VFPXDropDownMenuButton in VFPXDropDownMenuButton.vcx provides a button with a dropdown menu, sometimes called a "split" button. Drop one on a form, set Picture property of the cmdMain button as desired, fill in the ShortcutMenu method of the VFPXDropDownMenuButton object as necessary, and put code into the ButtonClicked method that executes when the user clicks the button.
