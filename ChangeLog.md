@@ -4,6 +4,22 @@ VFPX Framework provides base UI classes and commonly used functions for any proj
 
 ## Releases
 
+### 2026-08-10
+
+- The new VFPXSplitter provides horizontal and vertical splitter controls.
+
+- The new VFPXStatusBar provides a status bar.
+
+- VFPXGridBuilder.prg now supports BackColor and Forecolor settings and sets the Tag property of an auto-size column so it's resized when the grid is. It also handle phantom Column[1] columns.
+
+- VFPXBaseGrid has a SetupGrid method that uses the format returned by GridDefinition to set up the grid columns. This essentially does what VFPXGridBuilder.prg does but at runtime rather than (or in addition to) design time. The Init method calls SetupGrid but you can also call it anytime, such as after recreating a cursor used as the RecordSource for the grid.
+
+- A bug in VFPXSortGrid that prevented reversing the sort of a column by clicking it a second time was fixed.
+
+- Added a missing constant to ReadINI.prg.
+
+- VFPXDirectory and VFPXFile (in VFPXFileCtrls.vcx) no longer automatically add SFGDIMeasureString.prg to a project. Add that PRG and deploy System.app with your app if you want to have the controls adjust dynamically to the value of the cLabelCaption property. Otherwise, use the builder for these controls to set the label caption at design time.
+
 ### 2024-11-10
 
 - A new VFPXSortGrid class in VFPXSortGrid.vcx provides clicking the column header to sort on a column. Thanks to Tore Bleken for providing this class.

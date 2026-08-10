@@ -35,7 +35,7 @@ VFPXBaseLibrary.vcx contains subclasses of most VFP base classes.  Common change
 
 * lSaveAnchor: set this to .T. before programmatically changing the Top, Left, Height, or Width properties of the control to ensure anchoring is handled properly, then set it to .F. afterward.
 
-Changes in specific classes:
+## Changes in specific classes
 
 * VFPXBaseComboBox:
 
@@ -67,11 +67,27 @@ Changes in specific classes:
 
 * VFPXBaseGrid:
 
+    * AllowHeaderSizing: .F.
+
+    * AllowRowSizing: .F.
+    
     * Builder: VFPXGridBuilder.prg; see the VFPXGridBuilder section below.
     
-    * BuilderCode: calls SetupGrid, passing _cliptext.
+    * BuilderCode: code for a self-contained builder; see notes in the method for instructions.
+   
+    * DeleteMark: .F.
+
+    * GridDefinition: provides a place to put grid format text; see the VFPXGridBuilder section below.
     
-    * SetupGrid: sets up the grid using the specified column definitions; see comments in that method for instructions to use.
+    * Init: calls SetupGrid.
+
+    * RecordMark: .F.
+    
+    * Resize: adjust the width of the "auto-size" column.
+    
+    * SetupGrid: sets up the grid using the column definitions specified in GridDefinition. It's called from Init but you can also call it anytime, such as after recreating a cursor used as the RecordSource for the grid.
+
+    * SplitBar: .F.
 
 * VFPXBaseOptionGroup:
 
@@ -104,6 +120,8 @@ Grids can be a pain to set up, especially if you later need to add a column betw
 The easiest way to specify the format definition is to put it between TEXT and ENDTEXT statements in some method of the grid, such as Init. You then copy the text (not including the TEXT and ENDTEXT statements) and invoke the builder. Alternatively, put the definition into a custom GridDefinition of the grid (VFPXBaseGrid has such a method) and return the definition string from that method. Then there's no need to copy it to the clipboard before invoking the builder.
 
 To invoke the builder, if you're using a VFPXBaseGrid object, right-click the grid and choose Builder. For any other type of grid, select the grid and run VFPXGridBuilder.prg.
+
+To do the same thing VFPXGridBuilder at runtime, put the definition into GridDefinition and call SetupGrid anytime, such as after recreating a cursor used as the RecordSource for the grid.
 
 Here's an example of a format definition:
 
@@ -162,6 +180,9 @@ This.oPersist.Restore()
 
 Note this code specifies the cFileName property as belonging to "Thisform" since that property is referenced in the context of the VFPXPersist object.
 
+### Status bar
+Drop an instance of VFPXStatusBar (in VFPXStatusBar.vcx) onto a form to add a status bar. It automatically moves itself to the bottom of the form when the form is run and adjusts its width as the form is resized. The status bar has two labels: one at the left for a message and one at the right for the status. Call UpdateMessage and UpdateStatus to set the values for these labels.
+
 ### Button with dropdown menu
 VFPXDropDownMenuButton in VFPXDropDownMenuButton.vcx provides a button with a dropdown menu, sometimes called a "split" button. Drop one on a form, set Picture property of the cmdMain button as desired, fill in the ShortcutMenu method of the VFPXDropDownMenuButton object as necessary, and put code into the ButtonClicked method that executes when the user clicks the button.
 
@@ -197,6 +218,46 @@ if not empty(lcProject)
     Thisform.OpenProject(lcProject)
 endif not empty(lcProject)
 ```
+
+### Splitter control
+
+Splitters are interesting controls: they may or may not have a visual appearance themselves, but they allow you to change the relative size between two or more other controls by adjusting the size of one at the expense of the other. Splitters appear in lots of places in Windows applications; for example, in File Explorer, you can adjust the relative sizes of the left and right panes using a splitter. Splitters can be horizontal (they adjust objects to the left and right) or vertical (they adjust objects above and below), and you can have both types of splitter on the same form.
+
+Splitters are useful when you have multiple resizable controls. For example, Figure 1 shows a sample form with three editboxes. 
+
+![](vfpxsplitter.png)
+
+If the Anchor property of these controls is set, VFP automatically resizes them when the user resizes the form. The problem, though, is that there are competing resizing interests: the two editboxes on the left side of the form should both become taller as the form gets taller, and all three should get wider as the form gets wider. Setting Anchor of all three controls to 15 (resize vertically and horizontally) causes the controls to overlap as the form is resized. Although the Anchor property supports values that resize the control relatively rather than absolutely, the results aren't great. Instead, set Anchor so there's no competition for resizing (the upper left editbox gets wider and taller, the bottom left editbox gets only wider, and the right editbox only gets taller) and let the user decide the relative sizes of the control using splitters.
+
+The sample form shown has two splitters: a vertical one between the two editboxes at the left and a horizontal one between those editboxes and the one at the right. Dragging the vertical splitter up or down changes the heights of the editboxes above and below it. Dragging the horizontal splitter left or right changes the widths of all three editboxes.
+
+There are two styles in which the splitter can appear: visible with a "gripper" or invisible. In the image above, the vertical splitter appears as a grey bar with four dots in the middle (the gripper) while the horizontal one has no visual appearance other than the shape of the mouse pointer changes to an east-west arrow when it's over the control. Although the visible splitter is more discoverable, it also detracts from the appearance of the form. You can decide which style you want simply by setting a property of the splitter control to .T. or .F. Thanks to the late Matt Slay for creating the gripper control and adjusting the code to use this control in the splitter.
+
+The classes that make up the splitter control are defined in VFPXSplitter.vcx. The main class, VFPXSplitter, is actually an abstract class; you'll use either the VFPXSplitterH or VFPXSplitterV subclasses, depending on whether you want a horizontal or vertical splitter.
+
+VFPXSplitter is based on Container and it contains an instance of the Gripper class. It has changes to the following properties:
+
+* BackColor: 192,192,192 (grey). BackColor is only used if the lShowGripper property, discussed later, is .T.
+
+* BackStyle: 0-Transparent. This makes the splitter invisible at run time. If you set lShowGripper to .T., the Init method sets this property to 1-Opaque so the BackColor shows.
+
+* BorderColor: 255,0,0 (red) and BorderWidth: 2. These are only used so the splitter has a visual appearance at design time. The Init method changes BorderWidth to 0 so there's no border at run time.
+
+VFPXSplitter has six custom properties:
+
+* lShowGripper: set this to .T. to make the splitter visible and display the gripper.
+
+* nDots: set this to the number of dots (up to 5) you want in the gripper.
+
+* cObject1Name: the name of the object (it can be a comma-delimited list if there's more than one object) to the left of a horizontal splitter or above a vertical one.
+
+* cObject2Name: the name of the object (again, use a comma-delimited list for multiple objects) to the right of a horizontal splitter or below a vertical one.
+
+* nObject1MinSize: the minimum size for the object(s) named in cObject1Name.
+
+* nObject2MinSize: the minimum size for the object(s) named in cObject2Name.
+
+The two classes you'll actually use are VFPXSplitterH, a horizontal splitter, and VFPXSplitterV, a vertical one. The Height and Width of these subclasses are set such that the splitter has the appropriate shape. MousePointer contains 9-Size WE and 7-Size NS, respectively, and Anchor is set to 13 (resize vertically and bound to the right edge) and 14 (resize horizontally and bound to the bottom edge), respectively. 
 
 ## Running an executable
 While the VFP RUN command runs an executable, it provides little control. API_AppRun.prg by the late Ed Rauh provides a much better way to run an executable:

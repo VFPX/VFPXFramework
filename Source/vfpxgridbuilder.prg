@@ -90,6 +90,8 @@ local laColumns[1], ;
 	lnFormatColumn, ;
 	lnReadOnlyColumn, ;
 	lnControlColumn, ;
+	lnBackColorColumn, ;
+	lnForeColorColumn, ;
 	lcSetting, ;
 	lcAlias, ;
 	lcFontName, ;
@@ -119,7 +121,8 @@ lnColumns = lnColumns - 1
 
 lnSettings = alines(laSettings, laColumns[1], 0, '|')
 store 0 to lnFieldColumn, lnWidthColumn, lnCaptionColumn, lnAlignmentColumn, ;
-	lnInputMaskColumn, lnFormatColumn, lnReadOnlyColumn, lnControlColumn
+	lnInputMaskColumn, lnFormatColumn, lnReadOnlyColumn, lnControlColumn, ;
+	lnBackColorColumn, lnForeColorColumn
 for lnI = 1 to lnSettings
 	lcSetting = upper(alltrim(laSettings[lnI]))
 	do case
@@ -139,6 +142,10 @@ for lnI = 1 to lnSettings
 			lnReadOnlyColumn = lnI
 		case lcSetting = 'CONTROL'
 			lnControlColumn = lnI
+		case lcSetting = 'BACKCOLOR'
+			lnBackColorColumn = lnI
+		case lcSetting = 'FORECOLOR'
+			lnForeColorColumn = lnI
 	endcase
 next lnI
 if lnFieldColumn > 0 and lnCaptionColumn > 0
@@ -148,8 +155,21 @@ if lnFieldColumn > 0 and lnCaptionColumn > 0
 * Process each row in the definition.
 
 	with toGrid
+
+* Remove existing columns. Note that there still may be a Columns(1) for some
+* reason so we'll remove that manually.
+
 		.ColumnCount = 0
-			&& remove exist columns
+		try
+			do while type('.Columns(1).Name') = 'C'
+				lcColumn = .Columns(1).Name
+				.RemoveObject(lcColumn)
+			enddo while type('.Columns(1).Name') = 'C'
+		catch
+		endtry	
+
+* Create new columns.
+
 		.ColumnCount = lnColumns
 		lcAlias      = iif(empty(.RecordSource), '', .RecordSource + '.')
 		lcFontName   = .FontName
@@ -186,6 +206,12 @@ if lnFieldColumn > 0 and lnCaptionColumn > 0
 							.Alignment = 2
 					endcase
 				endif lnAlignmentColumn > 0
+				if lnBackColorColumn > 0 and not empty(laSettings[lnBackColorColumn])
+					.BackColor = evaluate(laSettings[lnBackColorColumn])
+				endif lnBackColorColumn > 0 ...
+				if lnForeColorColumn > 0 and not empty(laSettings[lnForeColorColumn])
+					.ForeColor = evaluate(laSettings[lnForeColorColumn])
+				endif lnForeColorColumn > 0 ...
 
 * Find the header and set its properties.
 

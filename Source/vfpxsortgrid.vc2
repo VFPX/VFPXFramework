@@ -36,7 +36,7 @@ DEFINE CLASS vfpxsortgrid AS vfpxbasegrid OF "vfpxbaselibrary.vcx"
 	*</PropValue>
 	
 	PROCEDURE createimages		&& Creates the up and down images
-		This.cDownImage = addbs(sys(2023)) + 'down.bmp'
+		This.cDownImage = lower(addbs(sys(2023))) + 'down.bmp'
 		if not file(This.cDownImage)
 			text to lcImage noshow pretext 1 + 2 + 4
 			424DF60000000000000076000000280000000F000000100000000
@@ -53,7 +53,7 @@ DEFINE CLASS vfpxsortgrid AS vfpxbasegrid OF "vfpxbaselibrary.vcx"
 			strtofile(strconv(lcImage, 16), This.cDownImage)
 		endif not file(This.cDownImage)
 		
-		This.cUpImage = addbs(sys(2023)) + 'up.bmp'
+		This.cUpImage = lower(addbs(sys(2023))) + 'up.bmp'
 		if not file(This.cUpImage)
 			text to lcImage noshow pretext 1 + 2 + 4
 			424DF60000000000000076000000280000000F00000010000
@@ -81,35 +81,38 @@ DEFINE CLASS vfpxsortgrid AS vfpxbasegrid OF "vfpxbaselibrary.vcx"
 			loControl, ;
 			loHeader, ;
 			lcField
+		dodefault()
 		with This
 			.CreateImages()
 			lcAlias  = .RecordSource
-			lnSelect = select()
-			select (lcAlias)
-			lcOrder      = set('ORDER')
-			llDescending = 'DESCENDING' $ lcOrder
-			lcOrder      = getwordnum(lcOrder, 2)
-			select (lnSelect)
-			for each loColumn in This.Columns foxobject
-				for each loControl in loColumn.Controls foxobject
-					if lower(loControl.BaseClass) == 'header'
-						loHeader = loControl
-						exit
-					endif lower(loControl.BaseClass) == 'header'
-				next loControl
-				lcField = upper(justext(loColumn.ControlSource))
-				do case
-					case not .IsTag(lcField, lcAlias)
-					case lcField == lcOrder
-						loHeader.BackColor = .nHeaderSortedBackColor
-						loHeader.Picture   = iif(llDescending, .cUpImage, .cDownImage)
-						loHeader.Tag       = lcField
-					otherwise
-						loHeader.BackColor = .nHeaderSortableBackColor
-						loHeader.Tag       = lcField
-				endcase
-				bindevent(loHeader, 'Click', This, 'SortGrid')
-			next loColumn
+			if not empty(lcAlias)
+				lnSelect = select()
+				select (lcAlias)
+				lcOrder      = set('ORDER')
+				llDescending = 'DESCENDING' $ lcOrder
+				lcOrder      = getwordnum(lcOrder, 2)
+				select (lnSelect)
+				for each loColumn in This.Columns foxobject
+					for each loControl in loColumn.Controls foxobject
+						if lower(loControl.BaseClass) == 'header'
+							loHeader = loControl
+							exit
+						endif lower(loControl.BaseClass) == 'header'
+					next loControl
+					lcField = upper(justext(loColumn.ControlSource))
+					do case
+						case not .IsTag(lcField, lcAlias)
+						case lcField == lcOrder
+							loHeader.BackColor = .nHeaderSortedBackColor
+							loHeader.Picture   = iif(llDescending, .cUpImage, .cDownImage)
+							loHeader.Tag       = lcField
+						otherwise
+							loHeader.BackColor = .nHeaderSortableBackColor
+							loHeader.Tag       = lcField
+					endcase
+					bindevent(loHeader, 'Click', This, 'SortGrid')
+				next loColumn
+			endif not empty(lcAlias)
 		endwith
 		
 	ENDPROC
@@ -151,7 +154,7 @@ DEFINE CLASS vfpxsortgrid AS vfpxbasegrid OF "vfpxbaselibrary.vcx"
 		* the sort order.
 		
 			if not empty(loHeader.Picture)
-				llDescending = lower(justfname(loHeader.Picture)) == This.cDownImage
+				llDescending = lower(loHeader.Picture) == This.cDownImage
 			else
 		
 		* Turn off sorting on other columns.
